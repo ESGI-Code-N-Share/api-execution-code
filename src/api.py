@@ -1,6 +1,6 @@
 # api.py
 from flask import Flask, request, jsonify
-from docker_builder import build_image, run_container
+from docker_service import build_image, run_container, remove_image
 
 app = Flask(__name__)
 
@@ -38,6 +38,7 @@ def handle_build():
         if container_success:
             return jsonify({'success': "Container ran successfully"}), 200
         else:
+            remove_image(tag)
             return jsonify({'error': "Container failed"}), 500
     else:
         return jsonify({'error': "Image not found"}), 400

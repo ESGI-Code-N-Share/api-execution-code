@@ -1,4 +1,4 @@
-# docker_builder.py
+# docker_service.py
 import docker
 from docker.errors import BuildError, ContainerError
 
@@ -28,6 +28,16 @@ def run_container(image_tag, remove):
     except ContainerError as e:
         print(f"Container failed due to {e}")
         return None
+
+
+def remove_image(tag):
+    try:
+        client.images.remove(image=tag, force=True)
+        print(f"Image {tag} removed successfully")
+    except docker.errors.ImageNotFound:
+        print("Image not found")
+    except docker.errors.APIError as e:
+        print(f"Failed to remove image due to {e}")
 
 
 if __name__ == "__main__":
