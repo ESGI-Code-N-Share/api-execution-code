@@ -31,7 +31,7 @@ def run_container(image_tag, remove):
 
 
 if __name__ == "__main__":
-    image_built = build_image('./dockerfiles', 'java.exe.dockerfile', 'java', {})
+    image_built = build_image('../dockerfiles/java', 'java.exe.dockerfile', 'java', {})
     if image_built:
         print("Image built successfully")
         run_container('java', remove=True)
