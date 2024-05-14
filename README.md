@@ -33,7 +33,7 @@ Ce projet fournit une API simple pour build et gérer des conteneurs Docker pour
 1. **Démarrer l'application Flask :**
 
    ```bash
-   python api.py
+   python app.py
    ```
 
    Ceci démarrera le serveur Flask sur `http://localhost:5000`.
@@ -43,10 +43,11 @@ Ce projet fournit une API simple pour build et gérer des conteneurs Docker pour
    Vous pouvez utiliser des outils comme Postman ou curl pour faire des requêtes :
 
    ```bash
-   POST http://localhost:5000/build
+   POST http://localhost:5000/execute-code
 
    {
-      "language": "java",
-      "uuid": "1"
+       "code": "public class HelloWorld { public static void main(String[] args) { System.out.println(\"Hello, World!\") } }",
+       "language": "java",
+       "uuid": "1"
    }
    ```
