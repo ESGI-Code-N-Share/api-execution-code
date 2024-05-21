@@ -2,7 +2,7 @@ import os
 
 from docker.errors import ImageNotFound, APIError
 
-from api.exceptions.LanguageNotSupported import LanguageNotSupported
+from api.exceptions.ImagePulledNotFound import ImagePulledNotFound
 from api.services.FileService import FileService
 
 
@@ -11,10 +11,11 @@ class DockerService:
         self.fileService = FileService()
         self.client = client
         self.registry = "codenshareregistry/edc"
-        self.default_volume_app = "/home/java/app/"
+        self.default_volume_app = "/home/executor/app/"
 
     def get_image(self, language):
-        image_name = f"{self.registry}-{language.name}:{language.version}"
+        version = language.version if language.version is not None else "latest"
+        image_name = f"{self.registry}-{language.name}:{version}"
 
         try:
             image = self.client.images.get(image_name)
@@ -27,7 +28,7 @@ class DockerService:
         try:
             return self.client.images.pull(image_name)
         except APIError:
-            raise LanguageNotSupported()
+            raise ImagePulledNotFound()
 
     def run_container(self, image, folder_path):
         absolute_folder_path = os.path.abspath(folder_path).lower() #todo: Abd don't to add lower before push

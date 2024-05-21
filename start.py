@@ -43,7 +43,7 @@ def configure_routes(app, executionService):
             code = data.get('code')
             uuid = data.get('uuid')
 
-            if not language_name or not code or not uuid or not version:
+            if not language_name or not code or not uuid:
                 return {'error': 'Missing required parameters'}, 400
 
             language = Language(language_name, version)
