@@ -1,0 +1,4 @@
+python-dotenv
+docker
+flask
+urllib3
