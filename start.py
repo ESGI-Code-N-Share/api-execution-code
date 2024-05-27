@@ -3,11 +3,11 @@ import sys
 import docker
 import urllib3
 from dotenv import load_dotenv
-from flask import Flask
 from flask import request, jsonify
 
 from api.models.CodeResources import CodeResources
 from api.models.LanguageModel import Language
+from tasks import flask_app
 from api.services.ExecutionService import ExecutionService
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -22,9 +22,9 @@ def run():
             sys.exit(1)
 
         executionService = ExecutionService(client)
-        app = Flask(__name__)
-        configure_routes(app, executionService)
-        app.run(debug=True, port=5000)
+        # app = Flask(__name__)
+        configure_routes(flask_app, executionService)
+        flask_app.run(debug=True, port=5000)
 
         print("Client Up")
     except:
@@ -48,8 +48,10 @@ def configure_routes(app, executionService):
 
             language = Language(language_name, version)
             codeResource = CodeResources(uuid, code, language)
-            output = executionService.execute_code(codeResource)
-            return jsonify({'result': output})
+            result = executionService.execute_code(codeResource)
+            # return {"result_id": result.id}
+            print(result)
+            return jsonify({'result_id': result.id})
 
         except Exception as a:
             print(a)
