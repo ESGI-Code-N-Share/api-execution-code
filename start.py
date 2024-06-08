@@ -1,12 +1,11 @@
+import os
 import sys
 
 import docker
 import urllib3
 from dotenv import load_dotenv
-from flask import request, jsonify
-
-from api.models.CodeResources import CodeResources
-from api.models.LanguageModel import Language
+from api.routes import configure_routes
+from api.services.RedisService import RedisService
 from tasks import flask_app
 from api.services.ExecutionService import ExecutionService
 
@@ -21,45 +20,16 @@ def run():
             print("Docker client is not available")
             sys.exit(1)
 
+        redisService = RedisService(os.getenv('REDIS_HOST'), os.getenv('REDIS_PORT'))
         executionService = ExecutionService(client)
-        # app = Flask(__name__)
-        configure_routes(flask_app, executionService)
-        flask_app.run(debug=True, port=5000)
+        configure_routes(executionService, redisService)
+        flask_app.run(debug=True, host=os.getenv('FLASK_HOST'), port=os.getenv('FLASK_PORT'))
 
         print("Client Up")
-    except:
-        print("Docker host not available")
+
+    except Exception as e:
+        print(e)
         sys.exit(1)
-
-
-def configure_routes(app, executionService):
-    @app.route('/execute-code', methods=['POST'])
-    def execute_code():
-        try:
-            data = request.get_json()
-
-            language_name = data.get('language')
-            version = data.get('version')
-            code = data.get('code')
-            uuid = data.get('uuid')
-
-            if not language_name or not code or not uuid:
-                return {'error': 'Missing required parameters'}, 400
-
-            language = Language(language_name, version)
-            codeResource = CodeResources(uuid, code, language)
-            result = executionService.execute_code(codeResource)
-            # return {"result_id": result.id}
-            print(result)
-            return jsonify({'result_id': result.id})
-
-        except Exception as a:
-            print(a)
-            return jsonify({'error': str(a)}), 400
-
-    @app.route('/up', methods=['GET'])
-    def healthcheck():
-        return 'up'
 
 
 if __name__ == "__main__":

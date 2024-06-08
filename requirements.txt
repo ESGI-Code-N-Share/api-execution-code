@@ -1,8 +1,9 @@
-python-dotenv
-docker
-flask
-urllib3
+python-dotenv~=1.0.1
+docker~=7.1.0
+flask~=3.0.3
+urllib3~=2.2.1
 celery==5.3.5
 celery[redis]
 celery[amqp]
 flower
+redis~=5.0.4
