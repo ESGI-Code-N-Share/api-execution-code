@@ -3,8 +3,8 @@ from typing import Any
 from celery.result import AsyncResult
 from flask import request, jsonify, Response
 
-from api.models.CodeResources import CodeResources
-from api.models.LanguageModel import Language
+from src.api.models.CodeResources import CodeResources
+from src.api.models.LanguageModel import Language
 from tasks import flask_app
 
 

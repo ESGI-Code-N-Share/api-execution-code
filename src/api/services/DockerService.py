@@ -2,8 +2,8 @@ import os
 
 from docker.errors import ImageNotFound, APIError
 
-from api.exceptions.ImagePulledNotFound import ImagePulledNotFound
-from api.services.FileService import FileService
+from src.api.exceptions.ImagePulledNotFound import ImagePulledNotFound
+from src.api.services.FileService import FileService
 
 
 class DockerService:

@@ -1,6 +1,6 @@
 import redis
 
-from api.exceptions.KeyNotFound import KeyNotFound
+from src.api.exceptions.KeyNotFound import KeyNotFound
 
 
 class RedisService:
