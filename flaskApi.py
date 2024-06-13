@@ -4,10 +4,10 @@ import sys
 import docker
 import urllib3
 from dotenv import load_dotenv
-from src.api.routes import configure_routes
-from src.api.services.RedisService import RedisService
+from api.routes import configure_routes
+from api.services.RedisService import RedisService
 from tasks import flask_app
-from src.api.services.ExecutionService import ExecutionService
+from api.services.ExecutionService import ExecutionService
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 load_dotenv()

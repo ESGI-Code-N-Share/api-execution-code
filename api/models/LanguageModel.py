@@ -1,4 +1,4 @@
-from src.api.exceptions.LanguageNotSupported import LanguageNotSupported
+from api.exceptions.LanguageNotSupported import LanguageNotSupported
 
 
 class Language:
