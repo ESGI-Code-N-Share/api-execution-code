@@ -13,7 +13,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 load_dotenv()
 
 
-def run():
+def create_app():
     try:
         client = docker.from_env()
         if not client.ping():
@@ -23,14 +23,15 @@ def run():
         redisService = RedisService(os.getenv('REDIS_HOST'), os.getenv('REDIS_PORT'))
         executionService = ExecutionService(client)
         configure_routes(executionService, redisService)
-        flask_app.run(debug=True, host=os.getenv('FLASK_HOST'), port=os.getenv('FLASK_PORT'))
-
         print("Client Up")
+        return flask_app
 
     except Exception as e:
         print(e)
         sys.exit(1)
 
 
+application = create_app()
+
 if __name__ == "__main__":
-    run()
+    application.run(debug=True, host=os.getenv('FLASK_HOST'), port=os.getenv('FLASK_PORT'))
