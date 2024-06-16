@@ -74,13 +74,10 @@ Il nous faut démarrer 5 services.
    URL: http://127.0.0.1:5555/tasks
 
 4. **Serveur Socket IO**
-   Une fois qu'un worker a finit sa tâche, il transmet le résultat au serveur socket io. A son tour, ce serveur émettra
+   Une fois qu'un worker a finit sa tâche, il transmet le résultat à un serveur socket io. A son tour, ce serveur émettra
    à l'aide de l'identifiant de la tâche le résultat correspondant. Bien sur, pour réceptionner le résultat, il faut un client
    qui écoute l'évènement.
 
-    ```bash
-      python socketServer.py
-    ```
 5. **API Flask**
    L'api flask permet de recevoir le code ainsi que d'autres données pour pouvoir exécuter du code. Elle fait
    donc appel ainsi à un worker pour faire le travail en la mettant dans une queue (rabbit mq)

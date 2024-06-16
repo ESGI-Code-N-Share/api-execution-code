@@ -16,7 +16,7 @@ celery_app = flask_app.extensions["celery"]
 load_dotenv()
 
 # maybe change to https
-SOCKETIO_SERVER_URL = f"http://{os.getenv('SERVER_SOCKET_HOST')}:{os.getenv('SERVER_SOCKET_PORT')}"
+SOCKETIO_SERVER_URL = os.getenv('SERVER_SOCKET_URL')
 
 
 @celery_app.task(ignore_result=False, soft_time_limit=15, time_limit=20)
