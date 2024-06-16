@@ -31,6 +31,6 @@ class DockerService:
             raise ImagePulledNotFound()
 
     def run_container(self, image, folder_path):
-        absolute_folder_path = os.path.abspath(folder_path).lower() #todo: Abd don't to add lower before push
+        absolute_folder_path = os.path.abspath(folder_path).lower()
         output = self.client.containers.run(image, remove=True, stdout=True, stderr=True, volumes=[f'{absolute_folder_path}/:{self.default_volume_app}'])
         return output.decode('utf-8')
