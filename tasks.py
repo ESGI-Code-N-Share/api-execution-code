@@ -1,14 +1,13 @@
 import os
 import time
 
-
 from dotenv import load_dotenv
 
 import docker
 import socketio
 from billiard.exceptions import SoftTimeLimitExceeded
 from celery import current_task
-from celery.signals import task_failure, task_success
+from celery.signals import task_failure, task_postrun
 from config import create_app
 from config import create_s3_client
 
@@ -28,13 +27,12 @@ def run_container(image, folder_path):
     default_volume_app = "/home/executor/app/"
     absolute_folder_path = os.path.abspath(folder_path).lower()
 
-    ts = time.time()
-    print(ts)
+    current_timestamp = time.time()
 
     output = client.containers.run(image, remove=True, stdout=True, stderr=True,
                                    volumes=[f'{absolute_folder_path}/:{default_volume_app}'])
 
-    write_result(task_id, ts)
+    write_result(task_id, current_timestamp)
     publish_message(task_id, output.decode('utf-8'))
     return output.decode('utf-8')
 
@@ -52,11 +50,16 @@ def task_failure_handler(sender=run_container, **kwargs):
         publish_message(task_id, str(exception))
 
 
-@task_success.connect(sender=run_container)
-def task_failure_handler(sender=run_container, **kwargs):
-    task_id = kwargs['task_id']
-    print("je dois tout clean")
-    # clean le folder result
+@task_postrun.connect(sender=run_container)
+def task_postrun_handler(sender=run_container, **kwargs):
+    base_folder_local_storage = os.getenv('LOCAL_STORAGE_PATH')
+    folder = base_folder_local_storage + sender.request.id + '/'
+    files = os.listdir(folder)
+    for file in files:
+        os.remove(folder + file)
+    os.rmdir(folder)
+    print("clean files....")
+
 
 def publish_message(task_id, result):
     clientSIO = socketio.Client()
@@ -73,19 +76,15 @@ def publish_message(task_id, result):
     clientSIO.emit("task_done", {"id": task_id, "content": result})
 
 
-def write_result(path_result, ts):
-    base_folder_code_resource = os.getenv('LOCAL_STORAGE_PATH')
+def write_result(path_result, timestamp_to_filter):
     AWS_S3_BUCKET_NAME = os.getenv('AWS_S3_BUCKET_NAME')
+    destination_folder_result = path_result + '/output/'
+    local_folder_result_path = os.getenv('LOCAL_STORAGE_PATH') + path_result + '/'
 
-    folder_result = path_result + '/output/'
-    complete_folder_path = base_folder_code_resource + path_result + '/'
-    print(complete_folder_path)
+    for file in os.listdir(local_folder_result_path):
+        current_file = local_folder_result_path + file
+        created_time = os.path.getmtime(current_file)
+        if created_time > timestamp_to_filter:
+            s3_client.upload_file(current_file, AWS_S3_BUCKET_NAME, destination_folder_result + '{}'.format(file))
 
-    s3_client.put_object(Bucket=AWS_S3_BUCKET_NAME, Key=folder_result)
-
-    for file in os.listdir(complete_folder_path):
-        created_time = os.path.getmtime(complete_folder_path + file)
-        if created_time > ts:
-            s3_client.upload_file(complete_folder_path + file, AWS_S3_BUCKET_NAME, folder_result + '{}'.format(file))
-
-    print("Upload results")
+    print("Upload results on storage....")
