@@ -1,5 +1,3 @@
-import os
-
 from docker.errors import ImageNotFound, APIError
 
 from api.exceptions.ImagePulledNotFound import ImagePulledNotFound
@@ -29,8 +27,3 @@ class DockerService:
             return self.client.images.pull(image_name)
         except APIError:
             raise ImagePulledNotFound()
-
-    def run_container(self, image, folder_path):
-        absolute_folder_path = os.path.abspath(folder_path).lower()
-        output = self.client.containers.run(image, remove=True, stdout=True, stderr=True, volumes=[f'{absolute_folder_path}/:{self.default_volume_app}'])
-        return output.decode('utf-8')
