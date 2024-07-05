@@ -1,5 +1,6 @@
 import os
 
+import boto3
 from celery import Celery, Task
 from dotenv import load_dotenv
 from flask import Flask
@@ -32,3 +33,13 @@ def create_app() -> Flask:
     app.config.from_prefixed_env()
     celery_init_app(app)
     return app
+
+
+def create_s3_client():
+    s3_client = boto3.client(
+        service_name='s3',
+        region_name=f"{os.getenv('AWS_REGION')}",
+        aws_access_key_id=f"{os.getenv('AWS_ACCESS_KEY')}",
+        aws_secret_access_key=f"{os.getenv('AWS_SECRET_KEY')}"
+    )
+    return s3_client

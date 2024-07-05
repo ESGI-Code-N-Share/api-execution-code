@@ -12,5 +12,5 @@ class ExecutionService:
     def execute_code(self, codeResources):
         image = self.dockerService.get_image(codeResources.language)
         folder_path = self.fileService.createFolderCodeResources(codeResources)
-        res = run_container.delay(image.tags[0], folder_path)
+        res = run_container.apply_async((image.tags[0], folder_path), task_id=codeResources.uuid)
         return res
