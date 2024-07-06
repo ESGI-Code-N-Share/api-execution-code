@@ -33,7 +33,8 @@ def run_container(image, folder_path):
                                    volumes=[f'{absolute_folder_path}/:{default_volume_app}'])
 
     write_result(task_id, current_timestamp)
-    publish_message(task_id, output.decode('utf-8'))
+
+    publish_message(task_id, output.decode('utf-8'), True)
     return output.decode('utf-8')
 
 
@@ -44,10 +45,10 @@ def task_failure_handler(sender=run_container, **kwargs):
     # todo reformat error
 
     if isinstance(exception, SoftTimeLimitExceeded):
-        publish_message(task_id, "Timeout error")
+        publish_message(task_id, "Timeout error", False)
 
     else:
-        publish_message(task_id, str(exception))
+        publish_message(task_id, str(exception), False)
 
 
 @task_postrun.connect(sender=run_container)
@@ -61,7 +62,7 @@ def task_postrun_handler(sender=run_container, **kwargs):
     print("clean files....")
 
 
-def publish_message(task_id, result):
+def publish_message(task_id, result, status):
     clientSIO = socketio.Client()
 
     @clientSIO.event
@@ -73,7 +74,13 @@ def publish_message(task_id, result):
         print('Disconnected from Socket.IO server')
 
     clientSIO.connect(SOCKETIO_SERVER_URL)
-    clientSIO.emit("task_done", {"id": task_id, "content": result})
+
+    if status:
+        data_to_send = 'success:' + str(result)
+    else:
+        data_to_send = 'error:' + str(result)
+
+    clientSIO.emit("task_done", {"id": task_id, "content": data_to_send})
 
 
 def write_result(path_result, timestamp_to_filter):
