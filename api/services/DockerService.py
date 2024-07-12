@@ -12,7 +12,7 @@ class DockerService:
         self.default_volume_app = "/home/executor/app/"
 
     def get_image(self, language):
-        version = language.version if language.version is not None else "latest"
+        version = "latest" if not language.version else language.version
         image_name = f"{self.registry}-{language.name}:{version}"
 
         try:

@@ -19,7 +19,7 @@ celery_app = flask_app.extensions["celery"]
 s3_client = create_s3_client()
 
 
-@celery_app.task(ignore_result=False, soft_time_limit=15, time_limit=20)
+@celery_app.task(ignore_result=False, soft_time_limit=5, time_limit=10)
 def run_container(image, folder_path):
     task_id = current_task.request.id
 
