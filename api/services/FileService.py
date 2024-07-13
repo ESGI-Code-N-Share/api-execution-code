@@ -18,15 +18,13 @@ class FileService:
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        self.createCodeFile(codeResources.code, folder_path, codeResources.language)
+        self.createCodeFile(codeResources.code, folder_path, codeResources.language.extension)
 
-        # todo : adapt when Corentin's pipeline
         self.downloadResources(codeResources.uuid)
         return folder_path
 
-    def createCodeFile(self, code, folder_path, language):
-        extension = language.getExtensionFile()
-        file_path_code = folder_path + "/" + self.default_filename_code + extension
+    def createCodeFile(self, code, folder_path, extensionLanguage):
+        file_path_code = folder_path + "/" + self.default_filename_code + extensionLanguage
         with open(file_path_code, 'w') as file:
             file.write(code)
             file.close()
