@@ -14,6 +14,9 @@ Ce projet a pour but d'exécuter du code de manière isolé et sécurisé dans d
 Nous pouvons pour l'instant exécuter du code en :
 - java 11, 17, 21
 - javascript
+- ruby
+- rust
+- python
 
 
 ## Configuration
